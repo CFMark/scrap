@@ -8,8 +8,9 @@ $(document).ready(()=>{
         .then( (resp) => {
             //console.log(resp);
             var data = resp.data;
-
+            $("#results").empty();
             var resultsTable = `<table id="results-table"></table>`;
+
             $("#results").append(resultsTable);
             
             data.forEach( (system, i) => {
