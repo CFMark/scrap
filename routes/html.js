@@ -32,6 +32,7 @@ router.post("/api/:zip", (req, res) => {
                         if ( i === 0) {
                             waterSystem.name = name;
                             waterSystem.link = link;
+
                         } else if (i === 1) {
                             waterSystem.city = name;
                             
@@ -39,7 +40,7 @@ router.post("/api/:zip", (req, res) => {
                             waterSystem.pop = name;
                         }
                     });
-                    console.log(waterSystem);
+                    //console.log(waterSystem);
                     waterSystems.push(waterSystem);
 
                 });
@@ -54,6 +55,44 @@ router.post("/api/:zip", (req, res) => {
     })
 
 
+});
+
+router.post("/api/system/:id", (req, res) => {
+    var systemId = req.params.id;
+    console.log(systemId);
+    axios.get(`https://www.ewg.org/tapwater/system.php?pws=${systemId}`)
+    .then( resp => {
+        var $ = cheerio.load(resp.data);
+        var contamList = [];
+        var contams = $("#contams_above_hbl").find(".contaminant-data");
+        //console.log(contams);
+        contams.each(function(i, element) {
+            var contamInfo = {};
+            //var entirecontam = $(element).html();
+            //CONTAMINANT NAME
+            contamInfo.name = $(element).find(".contaminant-name").find("h3").text();
+
+            contamInfo.yourLevel = $(element).find(".this-utility-ppb-popup").text();
+            contamInfo.healthGuide = $(element).find(".health-guideline-ppb").text();
+            console.log(contamInfo);
+            if(contamInfo.yourLevel === "" || contamInfo.healthGuide === ""){
+
+            } else {
+                contamList.push(contamInfo);
+            }
+            
+            //this-utility-ppb-popup
+            //health-guideline-ppb
+
+            
+        });
+        res.send(contamList)
+
+        
+    })
+    .catch( err => {
+        console.log(err)
+    })
 })
 
 module.exports = router;
