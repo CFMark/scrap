@@ -89,7 +89,7 @@ $(document).ready(function(){
                                                     <label class="active" for="report-email">First Name</label>
                                                 </div>
                                             </div>`;
-                            var modalFooter = `<a id="sendReport" class="waves-effect waves-light btn light-blue lighten-2">Send My Report</a>`;
+                            var modalFooter = `<a id="sendReport" class="modal-close waves-effect waves-light btn light-blue lighten-2">Send My Report</a>`;
                             setModal(modalTitle, modalBody, modalFooter);
                             $("#sendReport").click(function(e) {
                                 e.preventDefault();
