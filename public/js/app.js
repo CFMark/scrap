@@ -1,5 +1,17 @@
-$(document).ready(()=>{
-    
+$(document).ready(function(){
+    M.AutoInit();
+
+    var clearModal = function(){
+        $("#modal-title").empty();
+        $("#modal-body").empty();
+        $("#modal-footer").empty();
+    }
+
+    var setModal = function(title, body, footer) {
+        $("#modal-title").append(title);
+        $("#modal-body").append(body);
+        $("#modal-footer").append(footer);
+    }
 
     $("#sendZip").click( (e) => {
         e.preventDefault();
@@ -9,6 +21,7 @@ $(document).ready(()=>{
             //console.log(resp);
             var data = resp.data;
             $("#results").empty();
+            $("#sendReportContainer").empty();
             var resultsTable = `<table id="results-table"></table>`;
 
             $("#results").append(resultsTable);
@@ -42,6 +55,7 @@ $(document).ready(()=>{
                             console.log(resp);
                             var data = resp.data;
                             $("#results").empty();
+                            $("#sendReportContainer").empty();
                             var table = `<table id="results-table">
                                             <thead>
                                                 <tr>
@@ -60,7 +74,33 @@ $(document).ready(()=>{
                                                 <td>${contam.yourLevel}</td>
                                             </tr>`;
                                 $("#results-body").append(row);
-                            })
+                            });
+                            var sendReport = `<a class="waves-effect waves-light btn modal-trigger" href="#modal">Send Me My Report!</a>`;
+                            $("#sendReportContainer").append(sendReport);
+
+                            clearModal();
+
+                            var modalTitle = `<h5>Enter Your Email</h5>`;
+                            var modalBody = `<div class="row">
+                                                <div class="input-field col s12">
+                                                    <input placeholder="Enter Your Email" id="report-email" type="text" class="validate">
+                                                    <label class="active" for="report-email">First Name</label>
+                                                </div>
+                                            </div>`;
+                            var modalFooter = `<a id="sendReport" class="waves-effect waves-light btn">Send My Report</a>`;
+                            setModal(modalTitle, modalBody, modalFooter);
+                            $("#sendReport").click(function(e) {
+                                e.preventDefault();
+                                var email = $("#report-email").val();
+                                axios.post("/api/sendReport/"+email, data)
+                                .then(function(resp){
+                                    console.log(resp);
+                                })
+                                .catch(function(err){
+                                    console.log(err);
+                                })
+                            });
+
 
                         })
                         .catch( err => {
@@ -78,4 +118,5 @@ $(document).ready(()=>{
         })
         console.log(userZip);
     });
+
 });

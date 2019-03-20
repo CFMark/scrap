@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var axios = require("axios");
 var cheerio = require("cheerio");
+var mailer = require("../email/email");
 
 
 router.get("/", (req, res) => {
@@ -94,5 +95,16 @@ router.post("/api/system/:id", (req, res) => {
         console.log(err)
     })
 })
+
+router.post("/api/sendReport/:email", (req, res) => {
+    var email = req.params.email;
+    var data = req.body;
+
+    console.log(email);
+    console.log(req.body);
+    mailer.sendReport(email, data);
+
+    res.json("Email Sent");
+});
 
 module.exports = router;
