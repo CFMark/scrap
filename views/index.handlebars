@@ -1,19 +1,33 @@
 <div class="row">
-    <div class="input-field col s12">
-          <input placeholder="Enter your zip" id="zip" type="text" class="validate">
-          <label for="zip">Zip Code</label>
+    <div class="col s12 m6 offset-m3">
+        <div class="card">
+            <div class="row">
+                <div class="col s12 center-align">
+                    <h5>Enter Your Zip Code</h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10 offset-s1">
+                    <input placeholder="Enter your zip" id="zip" type="text" class="validate">
+                    {{!-- <label for="zip">Zip Code</label> --}}
+                </div>
+                <div class="col s12 center-align">
+                    <a id="sendZip" class="waves-effect waves-light btn light-blue lighten-2">Find</a>
+                </div>
+            </div>
+            <div class="row"></div>
         </div>
-    <div class="col s12">
-        <a id="sendZip" class="waves-effect waves-light btn">Find</a>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col s12 m10 offset-m1">
+        <div id="results" class="card center-align"></div>
     </div>
 </div>
 <div class="row">
-    <div class="col s12">
-        <div id="results" class="card"></div>
-    </div>
-</div>
-<div class="row">
-    <div class="col s12">
-        <div id="sendReportContainer" class="card"></div>
+    <div class="col s12 m6 offset-m3">
+        <div id="sendReportContainer" class="card center-align"></div>
     </div>
 </div>

@@ -22,32 +22,32 @@ $(document).ready(function(){
             var data = resp.data;
             $("#results").empty();
             $("#sendReportContainer").empty();
-            var resultsTable = `<table id="results-table"></table>`;
+            var resultsTable = `<table id="results-table" class="highlight"></table>`;
 
             $("#results").append(resultsTable);
             
             data.forEach( (system, i) => {
                 if(i === 0){
                     var thead = `<thead>
-                                    <tr>
+                                    <tr >
                                         <th>${system.name}</th>
                                         <th>${system.city}</th>
                                         <th>${system.pop}</th>
                                     </tr>
                                 </thead>`;
                     var tbody = `<tbody id="results-body"></tbody>`;
-                    $("#results").append(thead+tbody);
+                    $("#results-table").append(thead+tbody);
                 } else {
                     var id = system.link.toString().split("=")[1];
                     //console.log(id);
-                    var sysRow = `<tr >
+                    var sysRow = `<tr id="row-${i}">
                                     <td ><span id="${id}">${system.name}</span></td>
                                     <td>${system.city}</td>
                                     <td>${system.pop}</td>
                                 </tr>`;
                     $("#results-body").append(sysRow);
 
-                    $(`#${id}`).click( function(e) {
+                    $(`#row-${i}`).click( function(e) {
                         e.preventDefault();
 
                         axios.post(`/api/system/${id}`, id)
@@ -56,7 +56,7 @@ $(document).ready(function(){
                             var data = resp.data;
                             $("#results").empty();
                             $("#sendReportContainer").empty();
-                            var table = `<table id="results-table">
+                            var table = `<table id="results-table" class="highlight">
                                             <thead>
                                                 <tr>
                                                     <td>Name</td>
@@ -75,7 +75,9 @@ $(document).ready(function(){
                                             </tr>`;
                                 $("#results-body").append(row);
                             });
-                            var sendReport = `<a class="waves-effect waves-light btn modal-trigger" href="#modal">Send Me My Report!</a>`;
+                            var sendReport = `<div class="row"></div>
+                            <div class="row"><div class="col s12"><a class="waves-effect waves-light btn modal-trigger light-blue lighten-2" href="#modal">Send Me My Report!</a></div></div>
+                            <div class="row"></div>`;
                             $("#sendReportContainer").append(sendReport);
 
                             clearModal();
@@ -87,7 +89,7 @@ $(document).ready(function(){
                                                     <label class="active" for="report-email">First Name</label>
                                                 </div>
                                             </div>`;
-                            var modalFooter = `<a id="sendReport" class="waves-effect waves-light btn">Send My Report</a>`;
+                            var modalFooter = `<a id="sendReport" class="waves-effect waves-light btn light-blue lighten-2">Send My Report</a>`;
                             setModal(modalTitle, modalBody, modalFooter);
                             $("#sendReport").click(function(e) {
                                 e.preventDefault();
