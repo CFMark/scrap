@@ -92,7 +92,8 @@ $(document).ready(function(){
                             $("#sendReport").click(function(e) {
                                 e.preventDefault();
                                 var email = $("#report-email").val();
-                                axios.post("/api/sendReport/"+email, data)
+                                var table = $("#results").html();
+                                axios.post("/api/sendReport/"+email, table)
                                 .then(function(resp){
                                     console.log(resp);
                                 })

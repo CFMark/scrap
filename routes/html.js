@@ -101,7 +101,7 @@ router.post("/api/sendReport/:email", (req, res) => {
     var data = req.body;
 
     console.log(email);
-    console.log(req.body);
+    //console.log(req.body);
     mailer.sendReport(email, data);
 
     res.json("Email Sent");
