@@ -1,26 +1,27 @@
 require("dotenv").config();
 const nodemailer = require("nodemailer");
-var senderEmail = process.env.EMAIL;
-var senderEmailPassword = process.env.EMAIL_PASSWORD;
-var cheerio = require("cheerio");
+const senderEmail = process.env.EMAIL;
+const senderEmailPassword = process.env.EMAIL_PASSWORD;
+const cheerio = require("cheerio");
 
 
-var mailer = {
+const mailer = {
     sendReport: function(userEmail, data) {
-        let transporter = nodemailer.createTransport({
+        const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
                 user: senderEmail,
                 pass: senderEmailPassword
             }
         });
-        var $ = cheerio.load(data["<table id"]);
-        var string = "";
-        var data2 = $("body").html();
-        console.log(data2);
-        var data3 = data["<table id"];
+        // const $ = cheerio.load(data["<table id"]);
+        // var string = "";
+        // var data2 = $("body").html();
+        // console.log(data2);
+
+        const data3 = data["<table id"];
         //console.log(data["<table id"]);
-        let mailOptions = {
+        const mailOptions = {
             from: senderEmail,
             to: userEmail,
             subject: "Your Clearly Filtered Water Quality Assessment",

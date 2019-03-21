@@ -1,8 +1,9 @@
-var express = require("express");
-var router = express.Router();
-var axios = require("axios");
-var cheerio = require("cheerio");
-var mailer = require("../email/email");
+const express = require("express");
+const router = express.Router();
+const axios = require("axios");
+const cheerio = require("cheerio");
+const mailer = require("../email/email");
+const db = require("../models");
 
 
 router.get("/", (req, res) => {
@@ -11,25 +12,39 @@ router.get("/", (req, res) => {
 });
 
 router.post("/api/:zip", (req, res) => {
-    var zip = req.params.zip;
+    const zip = req.params.zip;
     
+    const request = {
+        zipcode: zip,
+        email: "",
+        cookie: ""
+    }
+
+    db.Request.create(request)
+    .then( resp => {
+        console.log(resp);
+    })
+    .catch( err => {
+        console.log(err);
+    })
+
     axios.post(`https://www.ewg.org/tapwater/search-results.php?zip5=${zip}&searchtype=zip`)
     .then( (resp) => {
         
-        var $ = cheerio.load(resp.data);
-        var waterSystems = [];
-        var results = $("table");
+        const $ = cheerio.load(resp.data);
+        const waterSystems = [];
+        const results = $("table");
         results.each(function(i, element) {
             
             if(i === 1){
                 $(element).find("tr").each(function(i, element) {
-                    var row =  $(element);
-                    var waterSystem = {};
+                    let row =  $(element);
+                    let waterSystem = {};
 
                     row.children().each(function(i, element) {
-                        var datum = $(element).html();
-                        var name = $(element).text();
-                        var link = $(element).find("a").attr("href");
+                        //var datum = $(element).html();
+                        let name = $(element).text();
+                        let link = $(element).find("a").attr("href");
                         if ( i === 0) {
                             waterSystem.name = name;
                             waterSystem.link = link;
@@ -81,10 +96,6 @@ router.post("/api/system/:id", (req, res) => {
             } else {
                 contamList.push(contamInfo);
             }
-            
-            //this-utility-ppb-popup
-            //health-guideline-ppb
-
             
         });
         res.send(contamList)
