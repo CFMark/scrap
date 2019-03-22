@@ -8,12 +8,14 @@ const htmlRoutes = require("./routes/html");
 const PORT = process.env.PORT || 3000; 
 const app = express();
 
+const dbURL = process.env.MONGODB_URI || 'mongodb://localhost/tapWaterReport';
+
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
-mongoose.connect('mongodb://localhost/tapWaterReport');
+mongoose.connect(dbURL);
 
 app.use(express.static("public"));
 app.use(htmlRoutes);
