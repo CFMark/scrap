@@ -2,13 +2,25 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const ContaminantSchema = new Schema({
-    zipcode: {
+    contam_id: {
         type: String
     },
-    email: {
+    name: {
         type: String
     },
-    cookie: {
+    local_level: {
+        type: String
+    },
+    state_avg:{
+        type: String
+    },
+    nat_avg: {
+        type: String
+    },
+    limit_type: {
+        type: String
+    },
+    limit_level: {
         type: String
     }
 });

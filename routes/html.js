@@ -12,10 +12,10 @@ router.get("/", (req, res) => {
 });
 
 router.post("/api/:zip", (req, res) => {
-    const zip = req.params.zip;
+    const zipcode = req.params.zip;
     
     const request = {
-        zipcode: zip,
+        zipcode: zipcode,
         email: "",
         cookie: ""
     }
@@ -26,9 +26,23 @@ router.post("/api/:zip", (req, res) => {
     })
     .catch( err => {
         console.log(err);
-    })
+    });
 
-    axios.post(`https://www.ewg.org/tapwater/search-results.php?zip5=${zip}&searchtype=zip`)
+
+    db.Zip.find({zip_id: zipcode})
+    .then( resp => {
+        console.log(resp);
+        if(resp.length === 0){
+            scrapeSystems();
+        }
+    })
+    .catch( err => {
+        console.log(err);
+    });
+
+
+    function scrapeSystems(){
+    axios.post(`https://www.ewg.org/tapwater/search-results.php?zip5=${zipcode}&searchtype=zip`)
     .then( (resp) => {
         
         const $ = cheerio.load(resp.data);
@@ -42,20 +56,26 @@ router.post("/api/:zip", (req, res) => {
                     let waterSystem = {};
 
                     row.children().each(function(i, element) {
-                        //var datum = $(element).html();
+                        
                         let name = $(element).text();
-                        let link = $(element).find("a").attr("href");
+                        let link =  $(element).find("a").attr("href");
+                        
                         if ( i === 0) {
+                            
                             waterSystem.name = name;
                             waterSystem.link = link;
 
                         } else if (i === 1) {
+                            
                             waterSystem.city = name;
                             
                         } else {
                             waterSystem.pop = name;
                         }
                     });
+                   
+
+                    
                     //console.log(waterSystem);
                     waterSystems.push(waterSystem);
 
@@ -63,48 +83,110 @@ router.post("/api/:zip", (req, res) => {
             }
             
         });
+        
+        for(var i = 0; i < waterSystems.length; i++){
+            if(i === 0){
+
+            } else {
+                let id = waterSystems[i].link.split("=")[1];
+                waterSystems[i].id = id;
+            }
+            
+        }
+        console.log(waterSystems);
+        //db.Zip.create()
         res.send(waterSystems);
 
     })
     .catch( (err) => {
         console.log(err)
     })
+    }
+    
 
 
 });
 
 router.post("/api/system/:id", (req, res) => {
     var systemId = req.params.id;
-    console.log(systemId);
+    var system = req.body;
+    console.log(system);
+
+    db.WaterDistrict.find({sys_id: systemId})
+    .then( resp => {
+        console.log(resp.length);
+        if(resp.length === 0){
+            scrape();
+        }
+        
+    })
+    .catch( err => {
+        console.log(err);
+    })
+
+    function scrape () {
     axios.get(`https://www.ewg.org/tapwater/system.php?pws=${systemId}`)
     .then( resp => {
         var $ = cheerio.load(resp.data);
+        var systemInfo = {};
         var contamList = [];
-        var contams = $("#contams_above_hbl").find(".contaminant-data");
-        //console.log(contams);
+        var contams = $(".contaminant-data");
+        
+        
         contams.each(function(i, element) {
             var contamInfo = {};
-            //var entirecontam = $(element).html();
-            //CONTAMINANT NAME
-            contamInfo.name = $(element).find(".contaminant-name").find("h3").text();
+            
+            contamInfo.contam_name = $(element).find(".contaminant-name").find("h3").text();
+            contamInfo.local_level = $(element).find(".this-utility-ppb-popup").text();
+            contamInfo.state_avg = $(element).find(".state-ppb-popup").text();
+            contamInfo.nat_avg = $(element).find(".national-ppb-popup").text();
+            
+            healthGuide = $(element).find(".health-guideline-ppb").text();
+            legalLimit = $(element).find(".legal-limit-ppb").text();
 
-            contamInfo.yourLevel = $(element).find(".this-utility-ppb-popup").text();
-            contamInfo.healthGuide = $(element).find(".health-guideline-ppb").text();
+            if(healthGuide !== "") {
+                contamInfo.limit_type = "Health Guideline";
+                contamInfo.limit_level = healthGuide;
+            } else if( legalLimit !== "") {
+                contamInfo.limit_type = "Legal Limit";
+                contamInfo.limit_level = legalLimit;
+            }
+
             console.log(contamInfo);
-            if(contamInfo.yourLevel === "" || contamInfo.healthGuide === ""){
+            if(contamInfo.local_level === "" || contamInfo.limit_type === undefined){
 
             } else {
                 contamList.push(contamInfo);
+                
+                
+
             }
             
         });
-        res.send(contamList)
 
-        
+        systemInfo.sys_id = systemId;
+        systemInfo.name = system.name;
+        systemInfo.city = system.city;
+        systemInfo.population = system.pop;
+        system.lastUpdated = Date.now();
+        systemInfo.local_contaminants = contamList;
+
+        db.WaterDistrict.create(systemInfo)
+        .then( resp => {
+            console.log(resp);
+        })
+        .catch( err => {
+            console.log(err);
+        });
+
+        res.send(contamList);
+
     })
     .catch( err => {
         console.log(err)
     })
+}
+//scrape();
 })
 
 router.post("/api/sendReport/:email", (req, res) => {
@@ -112,7 +194,7 @@ router.post("/api/sendReport/:email", (req, res) => {
     var data = req.body;
 
     console.log(email);
-    //console.log(req.body);
+    
     mailer.sendReport(email, data);
 
     res.json("Email Sent");

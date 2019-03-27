@@ -40,19 +40,24 @@ $(document).ready(function(){
                 } else {
                     var id = system.link.toString().split("=")[1];
                     //console.log(id);
+                    
                     var sysRow = `<tr id="row-${i}">
                                     <td ><span id="${id}">${system.name}</span></td>
                                     <td>${system.city}</td>
                                     <td>${system.pop}</td>
                                 </tr>`;
                     $("#results-body").append(sysRow);
-
+                    
                     $(`#row-${i}`).click( function(e) {
                         e.preventDefault();
-
-                        axios.post(`/api/system/${id}`, id)
+                        var sysInfo = {
+                            name: system.name,
+                            city: system.city,
+                            poputlation: system.pop
+                        }
+                        axios.post(`/api/system/${id}`, sysInfo)
                         .then( resp => {
-                            console.log(resp);
+                            //console.log(resp);
                             var data = resp.data;
                             $("#results").empty();
                             $("#sendReportContainer").empty();
@@ -68,10 +73,11 @@ $(document).ready(function(){
                                         </table>`;
                             $("#results").append(table);
                             data.forEach( contam => {
+                                console.log(contam);
                                 var row = `<tr>
-                                                <td>${contam.name}</td>
-                                                <td>${contam.healthGuide}</td>
-                                                <td>${contam.yourLevel}</td>
+                                                <td>${contam.contam_name}</td>
+                                                <td>${contam.limit_level}</td>
+                                                <td>${contam.local_level}</td>
                                             </tr>`;
                                 $("#results-body").append(row);
                             });
