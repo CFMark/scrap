@@ -50,7 +50,7 @@ router.post("/api/:zip", (req, res) => {
         const results = $("table");
         results.each(function(i, element) {
             
-            if(i === 1){
+            if(i === 0){
                 $(element).find("tr").each(function(i, element) {
                     let row =  $(element);
                     let waterSystem = {};
@@ -94,7 +94,7 @@ router.post("/api/:zip", (req, res) => {
             
         }
         console.log(waterSystems);
-        //db.Zip.create()
+        db.Zip.create()
         res.send(waterSystems);
 
     })
