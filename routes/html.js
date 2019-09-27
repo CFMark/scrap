@@ -22,6 +22,7 @@ router.post("/api/:zip", (req, res) => {
 
     db.Request.create(request)
     .then( resp => {
+        console.log('CREATED');
         console.log(resp);
     })
     .catch( err => {
@@ -31,6 +32,7 @@ router.post("/api/:zip", (req, res) => {
 
     db.Zip.find({zip_id: zipcode})
     .then( resp => {
+        console.log('FOUND');
         console.log(resp);
         if(resp.length === 0){
             scrapeSystems();
@@ -48,9 +50,11 @@ router.post("/api/:zip", (req, res) => {
         const $ = cheerio.load(resp.data);
         const waterSystems = [];
         const results = $("table");
+        
         results.each(function(i, element) {
-            
-            if(i === 1){
+            console.log(element);
+            console.log(i);
+            if(i === 0){
                 $(element).find("tr").each(function(i, element) {
                     let row =  $(element);
                     let waterSystem = {};
@@ -75,8 +79,8 @@ router.post("/api/:zip", (req, res) => {
                     });
                    
 
-                    
-                    //console.log(waterSystem);
+                    console.log('SYSTEM');
+                    console.log(waterSystem);
                     waterSystems.push(waterSystem);
 
                 });
@@ -94,7 +98,7 @@ router.post("/api/:zip", (req, res) => {
             
         }
         console.log(waterSystems);
-        //db.Zip.create()
+        db.Zip.create()
         res.send(waterSystems);
 
     })
@@ -186,7 +190,7 @@ router.post("/api/system/:id", (req, res) => {
         console.log(err)
     })
 }
-//scrape();
+scrape();
 })
 
 router.post("/api/sendReport/:email", (req, res) => {

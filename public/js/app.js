@@ -20,6 +20,7 @@ $(document).ready(function(){
         .then( (resp) => {
             //console.log(resp);
             var data = resp.data;
+            console.log(data)
             $("#results").empty();
             $("#sendReportContainer").empty();
             var resultsTable = `<table id="results-table" class="highlight"></table>`;
