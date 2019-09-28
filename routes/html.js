@@ -52,9 +52,8 @@ router.post("/api/:zip", (req, res) => {
         const results = $("table");
         
         results.each(function(i, element) {
-            console.log(element);
-            console.log(i);
-            if(i === 0){
+            
+            if(i === 1){
                 $(element).find("tr").each(function(i, element) {
                     let row =  $(element);
                     let waterSystem = {};
