@@ -34,9 +34,10 @@ router.post("/api/:zip", (req, res) => {
     .then( resp => {
         console.log('FOUND');
         console.log(resp);
-        if(resp.length === 0){
-            scrapeSystems();
-        }
+        // if(resp.length === 0){
+            
+        // }
+        scrapeSystems();
     })
     .catch( err => {
         console.log(err);
@@ -46,16 +47,17 @@ router.post("/api/:zip", (req, res) => {
     function scrapeSystems(){
     axios.post(`https://www.ewg.org/tapwater/search-results.php?zip5=${zipcode}&searchtype=zip`)
     .then( (resp) => {
-        
+        console.log('RUNNING');
         const $ = cheerio.load(resp.data);
         const waterSystems = [];
         const results = $("table");
         
         results.each(function(i, element) {
             
-            if(i === 1){
+            if(i === 0){
                 $(element).find("tr").each(function(i, element) {
                     let row =  $(element);
+                    
                     let waterSystem = {};
 
                     row.children().each(function(i, element) {
@@ -110,22 +112,26 @@ router.post("/api/:zip", (req, res) => {
 
 });
 
+//ROUTE
 router.post("/api/system/:id", (req, res) => {
     var systemId = req.params.id;
     var system = req.body;
+    console.log('systemXXXXX');
     console.log(system);
 
-    db.WaterDistrict.find({sys_id: systemId})
-    .then( resp => {
-        console.log(resp.length);
-        if(resp.length === 0){
-            scrape();
-        }
+    // db.WaterDistrict.find({sys_id: systemId})
+    // .then( resp => {
+    //     console.log(resp.length);
+    //     if(resp.length === 0){
+    //         scrape();
+    //     }
         
-    })
-    .catch( err => {
-        console.log(err);
-    })
+    // })
+    // .catch( err => {
+    //     console.log(err);
+    // })
+
+    scrape();
 
     function scrape () {
     axios.get(`https://www.ewg.org/tapwater/system.php?pws=${systemId}`)
@@ -192,6 +198,7 @@ router.post("/api/system/:id", (req, res) => {
 scrape();
 })
 
+//ROUTE
 router.post("/api/sendReport/:email", (req, res) => {
     var email = req.params.email;
     var data = req.body;

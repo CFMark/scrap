@@ -18,7 +18,7 @@ $(document).ready(function(){
         var userZip = $("#zip").val();
         axios.post("/api/"+userZip, userZip)
         .then( (resp) => {
-            //console.log(resp);
+            console.log(resp);
             var data = resp.data;
             console.log(data)
             $("#results").empty();
@@ -56,6 +56,7 @@ $(document).ready(function(){
                             city: system.city,
                             poputlation: system.pop
                         }
+                        
                         axios.post(`/api/system/${id}`, sysInfo)
                         .then( resp => {
                             //console.log(resp);

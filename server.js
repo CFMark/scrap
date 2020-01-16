@@ -15,7 +15,7 @@ app.use(express.json());
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
-mongoose.connect(dbURL);
+mongoose.connect(dbURL,{ useNewUrlParser: true });
 
 app.use(express.static("public"));
 app.use(htmlRoutes);
