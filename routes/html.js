@@ -62,6 +62,7 @@ router.post("/api/:zip", (req, res) => {
 
                     row.children().each(function(i, element) {
                         
+                        //console.log(element)
                         let name = $(element).text();
                         let link =  $(element).find("a").attr("href");
                         
@@ -116,7 +117,7 @@ router.post("/api/:zip", (req, res) => {
 router.post("/api/system/:id", (req, res) => {
     var systemId = req.params.id;
     var system = req.body;
-    console.log('systemXXXXX');
+    
     console.log(system);
 
     // db.WaterDistrict.find({sys_id: systemId})
@@ -131,15 +132,18 @@ router.post("/api/system/:id", (req, res) => {
     //     console.log(err);
     // })
 
-    scrape();
+    
 
     function scrape () {
     axios.get(`https://www.ewg.org/tapwater/system.php?pws=${systemId}`)
     .then( resp => {
+        
         var $ = cheerio.load(resp.data);
         var systemInfo = {};
         var contamList = [];
         var contams = $(".contaminant-data");
+        console.log('XXXXXXXXXX');
+        
         
         
         contams.each(function(i, element) {
@@ -152,6 +156,12 @@ router.post("/api/system/:id", (req, res) => {
             
             healthGuide = $(element).find(".health-guideline-ppb").text();
             legalLimit = $(element).find(".legal-limit-ppb").text();
+            console.log('XXXXXXXXXXXXXXXXXXXXXX');
+            var x = $(element).find(".detect-levels-overview").children();
+            var y = $(x).find('.flex-sb').children();
+            var z = $(y).find('span').text();
+
+            console.log(x.text());
 
             if(healthGuide !== "") {
                 contamInfo.limit_type = "Health Guideline";
@@ -161,7 +171,7 @@ router.post("/api/system/:id", (req, res) => {
                 contamInfo.limit_level = legalLimit;
             }
 
-            console.log(contamInfo);
+            //console.log(contamInfo);
             if(contamInfo.local_level === "" || contamInfo.limit_type === undefined){
 
             } else {
@@ -180,13 +190,13 @@ router.post("/api/system/:id", (req, res) => {
         system.lastUpdated = Date.now();
         systemInfo.local_contaminants = contamList;
 
-        db.WaterDistrict.create(systemInfo)
-        .then( resp => {
-            console.log(resp);
-        })
-        .catch( err => {
-            console.log(err);
-        });
+        // db.WaterDistrict.create(systemInfo)
+        // .then( resp => {
+        //     console.log(resp);
+        // })
+        // .catch( err => {
+        //     console.log(err);
+        // });
 
         res.send(contamList);
 
@@ -195,6 +205,7 @@ router.post("/api/system/:id", (req, res) => {
         console.log(err)
     })
 }
+
 scrape();
 })
 
